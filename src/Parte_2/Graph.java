@@ -15,6 +15,9 @@ public class Graph {
 	private List<Integer> nodos;
 	private static Logger logger;
 
+	/**
+	 * Inicializa un grafo vacio
+	 */
 	public Graph() {
 		arcos = new LinkedList<Edge>();
 		nodos = new LinkedList<Integer>();
@@ -28,15 +31,15 @@ public class Graph {
 
 			logger.setLevel(Level.WARNING);
 
-			Logger rootLogger = logger.getParent();
-			for (Handler h : rootLogger.getHandlers()) {
+			Logger logger_raiz = logger.getParent();
+			for (Handler h : logger_raiz.getHandlers()) {
 				h.setLevel(Level.OFF);
 			}
 		}
 	}
 
 	/**
-	 * Agrega el nodo "node" al grafo, si aún no pertenecía a la estructura.
+	 * Agrega el nodo parametrizado al grafo, si aún no pertenecía a la estructura.
 	 * 
 	 * @param node nodo a insertar.
 	 */
@@ -54,21 +57,21 @@ public class Graph {
 	}
 
 	/**
-	 * Agrega un arco entre el nodo “node1” y el nodo “node2”, si aún no existía el
-	 * arco y ambos parámetros son nodos pertenecientes a la estructura.
+	 * Agrega un arco entre node1 y node2, si aún no existía el arco y ambos
+	 * parámetros son nodos pertenecientes a la estructura.
 	 * 
 	 * @param node1
 	 * @param node2
 	 */
 	public void addEdge(int node1, int node2) {
 		Integer nodo1 = node1, nodo2 = node2;
-		int estaNodo1, estaNodo2;
+		int pertenece_nodo1, pertenece_nodo2;
 		Edge edge;
 		boolean pertenecen, existe_arco = false;
-		estaNodo1 = nodos.indexOf(nodo1);
-		estaNodo2 = nodos.indexOf(nodo2);
+		pertenece_nodo1 = nodos.indexOf(nodo1);
+		pertenece_nodo2 = nodos.indexOf(nodo2);
 
-		pertenecen = estaNodo1 != -1 && estaNodo2 != -1;
+		pertenecen = pertenece_nodo1 != -1 && pertenece_nodo2 != -1;
 		if (pertenecen) {
 			for (Edge arco : arcos) {
 				if (arco.get_origen() == nodo1 && arco.get_destino() == nodo2) {
@@ -83,13 +86,13 @@ public class Graph {
 			else {
 				edge = new Edge(nodo1, nodo2);
 				arcos.add(edge);
-				logger.info("El arco " + edge.toString() + "  fue añadido al grafo correctamente.");
+				logger.info("El arco " + edge.toString() + " fue añadido al grafo correctamente.");
 			}
 		} else {
-			if (estaNodo1 == -1)
+			if (pertenece_nodo1 == -1)
 				logger.warning("El nodo " + nodo1 + " no pertenece al grafo, por lo cual " + "el arco (" + nodo1 + ","
 						+ nodo2 + ") no fue añadido");
-			if (estaNodo2 == -1)
+			if (pertenece_nodo2 == -1)
 				logger.warning("El nodo " + nodo2 + " no pertenece al grafo, por lo cual " + "el arco (" + nodo1 + ","
 						+ nodo2 + ") no fue añadido");
 
@@ -103,29 +106,32 @@ public class Graph {
 	 * @param node
 	 */
 	public void removeNode(int node) {
-		Integer indice, nodo = node;
+		Integer nodo = node;
+		int indice;
 		indice = nodos.indexOf(nodo);
 
 		if (indice != -1) {
-			nodos.remove(indice);
+
 			logger.info("El nodo " + node + " fue removido correctamente.");
 			if (!arcos.isEmpty()) {
-				eliminarArcos(nodo, 0, arcos.size());
+				eliminar_arcos(nodo, 0, arcos.size());
 			}
+			nodos.remove(indice);
 		} else {
 			logger.warning("El nodo " + node + " no pertenece al grafo.");
 		}
 	}
 
-	private void eliminarArcos(Integer nodo, int pri, int ult) {
+	private void eliminar_arcos(Integer nodo, int pri, int ult) {
 		if (pri != ult)
 			if (arcos.get(pri).get_origen() == nodo || arcos.get(pri).get_destino() == nodo) {
-				eliminarArcos(nodo, pri + 1, ult);
-		
-				logger.info("El arco (" + arcos.get(pri).get_origen()+","+arcos.get(pri).get_destino() + ") fue removido correctamente.");
+				eliminar_arcos(nodo, pri + 1, ult);
+
+				logger.info("El arco (" + arcos.get(pri).get_origen() + "," + arcos.get(pri).get_destino()
+						+ ") fue removido.");
 				arcos.remove(pri);
-			}else
-				eliminarArcos(nodo, pri + 1, ult);
+			} else
+				eliminar_arcos(nodo, pri + 1, ult);
 
 	}
 
